@@ -1,28 +1,42 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const cors = require("cors");
+const cors = require('cors');
+const port = process.env.PORT || 5000;
+
 app.use(cors());
 
-const Port = process.env.Port || 5000;
+const categories = require('./data/categories.json');
+const courses = require('./data/course.json');
 
-const coursesData = require("./Data/course.json");
-
-app.get("/", (req, res) => {
-  res.send(" server is running");
+app.get('/', (req, res) => {
+    res.send('Course API Running');
 });
 
-app.get("/courses", (req, res) => {
-  res.send(coursesData);
+app.get('/news-categories', (req, res) => {
+    res.send(categories)
 });
 
-app.get("/course/:id", (req, res) => {
-  const id = req.params.id;
-  const getSingleData = coursesData?.find((p) => p.id == id);
-  res.send(getSingleData);
+app.get('/category/:id', (req, res) => {
+    const id = req.params.id;
+    if (id === '08') {
+        res.send(courses);
+    }
+    else {
+        const category_courses = courses.filter(n => n.category_id === id);
+        res.send(category_courses);
+    }
+})
+
+app.get('/courses', (req, res) =>{
+    res.send(courses);
 });
 
-app.listen(Port, () => {
-  console.log("server is running", Port);
+app.get('/courses/:id', (req, res) => {
+    const id = req.params.id;
+    const selectedCourses = courses.find(n => n._id === id);
+    res.send(selectedCourses);
 });
 
-module.exports = app;
+app.listen(port, () => {
+    console.log('Course Server running on port', port);
+})
